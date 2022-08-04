@@ -2,13 +2,7 @@ package org.example.service;
 
 import org.example.model.ToDoList;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.util.HashSet;
 import java.util.Set;
@@ -59,14 +53,20 @@ public class ToDoListService {
     /**
      * Method to delete a task from the list by its title
      *
+     * @param title Title of task to be deleted for being used in FrontEnd trough QueryParam
      * @param element Task to be deleted
      * @return Set of ToDoList with all tasks registered
      */
     @DELETE
-    public Set<ToDoList> delete(ToDoList element) {
+    public Set<ToDoList> delete(@QueryParam("title") String title,ToDoList element) {
         logger.info("Deleting task in Set of ToDoList");
-        logger.info("Element to be deleted:"+element.toString());
-        toDoLists.removeIf(value -> value.getTitle().contentEquals(element.getTitle()));
+        logger.info("Element to be deleted:"+element);
+        logger.info("Title to be deleted:"+title);
+        if(title != null && !title.isEmpty()){
+            toDoLists.removeIf(value -> value.getTitle().contentEquals(title));
+        }else if(!element.getTitle().isEmpty()){
+            toDoLists.removeIf(value -> value.getTitle().contentEquals(element.getTitle()));
+        }
         logger.info("Tasks returned to the API:"+ toDoLists);
         return toDoLists;
     }
@@ -96,19 +96,20 @@ public class ToDoListService {
     /**
      * Method to update the status of a task by its title
      *
-     * @param element Task to be updated
+     * @param title Task to be updated
+     * @param state New state for the task
      * @return Set of ToDoList with all tasks registered
      */
     @PUT
-    @Path("/status")
-    public Set<ToDoList> updateStatus(ToDoList element) {
+    @Path("/state")
+    public Set<ToDoList> updateStatus(@QueryParam("title") String title,@QueryParam("state") String state) {
         logger.info("Updating status of task in Set of ToDoList");
-        logger.info("Element with title to be updated:"+element.toString());
+        logger.info("Element with title to be updated:"+title);
         for (ToDoList value : toDoLists) {
-            if (value.getTitle().equals(element.getTitle())) {
-                logger.info("Updating task with title:"+ element.getTitle());
-                logger.info("Updating task state to:"+ element.getState());
-                value.setState(element.getState());
+            if (value.getTitle().equals(title)) {
+                logger.info("Updating task with title:"+ title);
+                logger.info("Updating task state to:"+ state);
+                value.setState(state);
                 logger.info("Breaking loop after updated the first element found with the same title");
                 break;
             }
@@ -125,13 +126,13 @@ public class ToDoListService {
      */
     @GET
     @Path("/task")
-    public Set<ToDoList> getTask(ToDoList element) {
+    public Set<ToDoList> getTask(@QueryParam("title") String element) {
         //Buscar y obtener
         logger.info("Getting task from Set of ToDoList");
-        logger.info("Element to get by its title:"+element.toString());
+        logger.info("Element to get by its title:"+element);
         Set<ToDoList> toDoResultsLists = new HashSet<>();
         toDoLists.forEach(value -> {
-            if (value.getTitle().equals(element.getTitle())) {
+            if (value.getTitle().equals(element)) {
                 logger.info("Adding task to list to return to the user:"+ value);
                 toDoResultsLists.add(value);
             }

@@ -1,0 +1,23 @@
+<div class="container">
+  <h1>Angular 13 CRUD Example - ItSolutionStuff.com</h1>
+  <a href="#" routerLink="/todo/create/" class="btn btn-success">Create New Post</a>
+  <table class="table table-bordered">
+    <tr>
+      <th>Title</th>
+      <th>Description</th>
+      <th>State</th>
+      <th width="220px">Action</th>
+    </tr>
+    <tr *ngFor="let todo of todoList">
+      <td>{{ todo.title }}</td>
+      <td>{{ todo.description }}</td>
+      <td>{{ todo.state }}</td>
+      <td>
+        <a href="#" [routerLink]="['/todo/view?title=', todo.title]" class="btn btn-info">View</a>
+        <a href="#" [routerLink]="['/todo/edit?title=', todo.title]" class="btn btn-primary">Edit</a>
+        <button type="button" (click)="deleteTodo(todo.title)" class="btn btn-danger">Delete</button>
+      </td>
+    </tr>
+  </table>
+</div>
+
